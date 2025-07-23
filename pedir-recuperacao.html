@@ -1,0 +1,160 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Recuperar Senha</title>
+    <style>
+        /* (CSS idêntico ao que já temos, com fundo e painel flutuante) */
+        body {
+            font-family: 'Segoe UI', sans-serif;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+            background-image: url('https://i.pinimg.com/1200x/d5/9e/d6/d59ed65ae2a425b791567393a277ea89.jpg');
+            background-size: cover;
+            background-position: center;
+            background-attachment: fixed;
+            position: relative;
+        }
+
+            body::before {
+                content: '';
+                position: fixed;
+                top: 0;
+                left: 0;
+                right: 0;
+                bottom: 0;
+                background-color: rgba(0, 0, 0, 0.5);
+                z-index: 1;
+            }
+
+        .container {
+            padding: 2.5rem;
+            width: 90%;
+            max-width: 450px;
+            text-align: center;
+            position: relative;
+            z-index: 2;
+            background-color: rgba(255, 255, 255, 0.95);
+            border-radius: 15px;
+            box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.37);
+        }
+
+        h2 {
+            color: #343a40;
+            margin-top: 0;
+            margin-bottom: 1rem;
+        }
+
+        p {
+            color: #6c757d;
+            font-size: 0.95rem;
+            line-height: 1.5;
+        }
+
+        input {
+            width: 95%;
+            padding: 0.9rem 1rem;
+            margin-top: 1rem;
+            margin-bottom: 1rem;
+            border: 1px solid #ced4da;
+            border-radius: 8px;
+            font-size: 1rem;
+        }
+
+        button {
+            width: 100%;
+            padding: 0.9rem;
+            background-color: #e984f7;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 1rem;
+            font-weight: bold;
+            margin-top: 1rem;
+        }
+
+        #mensagem {
+            margin-top: 15px;
+            font-weight: bold;
+            padding: 0.8rem;
+            border-radius: 8px;
+        }
+
+        .sucesso {
+            color: #155724;
+            background-color: #d4edda;
+            border: 1px solid #c3e6cb;
+        }
+
+        .erro {
+            color: #721c24;
+            background-color: #f8d7da;
+            border: 1px solid #f5c6cb;
+        }
+
+        .back-link {
+            display: block;
+            margin-top: 1.5rem;
+            font-size: 0.9rem;
+            color: #e984f7;
+            text-decoration: none;
+            font-weight: bold;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h2>Esqueceu sua senha?</h2>
+        <p>Não se preocupe! Digite seu e-mail e enviaremos um código de 6 dígitos para você.</p>
+        <form id="request-form">
+            <input type="email" id="email" placeholder="Digite seu e-mail" required>
+            <button type="submit">Enviar Código</button>
+        </form>
+        <div id="mensagem"></div>
+        <a href="login.html" class="back-link">Voltar para o Login</a>
+    </div>
+
+    <script>
+        document.getElementById('request-form').addEventListener('submit', async function (e) {
+            e.preventDefault();
+            const email = document.getElementById('email').value;
+            const button = e.target.querySelector('button');
+            const mensagemDiv = document.getElementById('mensagem');
+
+            button.disabled = true;
+            mensagemDiv.className = '';
+            mensagemDiv.textContent = 'Enviando...';
+
+            try {
+                const response = await fetch('http://localhost:3000/esqueci-senha', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ email: email })
+                });
+                const result = await response.json();
+                if (!response.ok) throw new Error(result.message);
+
+                // --- MUDANÇA PRINCIPAL AQUI ---
+                // Mostra mensagem de sucesso e redireciona após um pequeno atraso
+                mensagemDiv.className = 'sucesso';
+                mensagemDiv.textContent = result.message + " Redirecionando...";
+
+                setTimeout(() => {
+                    // Redireciona para a nova página, passando o e-mail na URL
+                    window.location.href = `redefinir-senha.html?email=${encodeURIComponent(email)}`;
+                }, 2000); // Atraso de 2 segundos para o usuário ler a mensagem
+
+            } catch (error) {
+                mensagemDiv.className = 'erro';
+                mensagemDiv.textContent = error.message || 'Erro de conexão.';
+                button.disabled = false;
+            }
+        });
+    </script>
+</body>
+</html>

@@ -1,0 +1,278 @@
+﻿<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Detalhes do Produto</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            margin: 0;
+            /* --- INÍCIO DA MUDANÇA --- */
+            background-image: url('https://i.pinimg.com/1200x/d5/9e/d6/d59ed65ae2a425b791567393a277ea89.jpg');
+            background-size: cover;
+            background-position: center;
+            background-attachment: fixed;
+            position: relative;
+        }
+
+        body::before {
+            content: '';
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: rgba(0, 0, 0, 0.5);
+            z-index: 1;
+        }
+        /* --- FIM DA MUDANÇA --- */
+
+        .container {
+            max-width: 1200px;
+            margin: 2rem auto;
+            padding: 0 2rem;
+            /* --- Adicionado para o efeito flutuante --- */
+            position: relative;
+            z-index: 2;
+        }
+        .product-details-grid {
+            display: grid;
+            grid-template-columns: 1fr 1.2fr;
+            gap: 50px;
+            background-color: white;
+            padding: 2rem;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+        }
+
+        /* --- Coluna da Esquerda (Imagens) --- */
+        .product-image-section .main-image img {
+            width: 100%;
+            height: auto;
+            max-height: 450px;
+            object-fit: contain;
+            border: 1px solid #eee;
+            border-radius: 8px;
+        }
+        .thumbnail-gallery {
+            display: flex;
+            gap: 10px;
+            margin-top: 15px;
+            justify-content: center;
+        }
+        .thumbnail-gallery img {
+            width: 70px;
+            height: 70px;
+            object-fit: cover;
+            border: 2px solid #ddd;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: border-color 0.2s;
+        }
+        .thumbnail-gallery img:hover, .thumbnail-gallery img.active {
+            border-color: #e984f7; /* Cor do tema */
+        }
+        
+        /* --- Coluna da Direita (Informações) --- */
+        .product-info-section h1 {
+            font-size: 2rem;
+            margin-top: 0;
+            margin-bottom: 0.5rem;
+            color: #111;
+        }
+        .product-info-section .seller {
+            font-size: 0.9rem;
+            color: #007185;
+            text-decoration: none;
+            margin-bottom: 1rem;
+            display: block;
+        }
+        .product-info-section .rating {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            color: #555;
+            margin-bottom: 1rem;
+            border-top: 1px solid #eee;
+            border-bottom: 1px solid #eee;
+            padding: 1rem 0;
+        }
+        .rating .stars {
+            color: #ffa41c;
+            font-size: 1.2rem;
+        }
+        .product-info-section .price {
+            font-size: 2.2rem;
+            color: #B12704;
+            font-weight: 500;
+            margin-bottom: 1.5rem;
+        }
+        .product-options label {
+            font-weight: bold;
+            display: block;
+            margin-bottom: 5px;
+        }
+        .product-options select, .product-options input {
+            padding: 8px;
+            border-radius: 5px;
+            border: 1px solid #ccc;
+            margin-bottom: 1rem;
+            width: 150px;
+        }
+        .buy-button {
+            width: 100%;
+            padding: 12px;
+            font-size: 1.2rem;
+            font-weight: bold;
+            background-color: #e984f7; /* Cor do tema */
+            color: white;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: background-color 0.2s;
+        }
+        .buy-button:hover {
+            background-color: #d666e4;
+        }
+        .product-description {
+            margin-top: 2rem;
+        }
+        .product-description h3 {
+            border-bottom: 1px solid #ccc;
+            padding-bottom: 5px;
+        }
+
+        /* Botões de Ação do Dono */
+        .owner-actions { margin-top: 2rem; }
+        .owner-actions a, .owner-actions button { padding: 8px 15px; text-decoration: none; border-radius: 5px; color: white; border: none; cursor: pointer; margin-right: 10px; }
+        #btn-editar { background-color: #007bff; }
+        #btn-deletar { background-color: #dc3545; }
+        .hidden { display: none; }
+
+        /* Responsividade */
+        @media (max-width: 800px) {
+            .product-details-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container" id="product-container">
+        <div class="product-details-grid">
+            
+            <div class="product-image-section">
+                <div class="main-image">
+                    <img src="" alt="Foto Principal do Produto" id="imagem-principal">
+                </div>
+                <div class="thumbnail-gallery" id="thumbnail-gallery">
+                    </div>
+            </div>
+
+            <div class="product-info-section">
+                <h1 id="nome-produto">Carregando...</h1>
+                <a href="#" class="seller">Vendido por: <span id="vendedor-nome">...</span></a>
+                
+                <div class="rating">
+                    <span class="stars">★★★★☆</span>
+                    <span>(125 avaliações)</span>
+                </div>
+
+                <div class="price" id="preco-produto"></div>
+
+                <div class="product-options">
+                    <label for="tamanho">Tamanho:</label>
+                    <select id="tamanho" name="tamanho">
+                        <option value="rn">RN (Recém-nascido)</option>
+                        <option value="p">P (0-3 meses)</option>
+                        <option value="m">M (3-6 meses)</option>
+                        <option value="g">G (6-9 meses)</option>
+                    </select>
+
+                    <label for="quantidade">Quantidade:</label>
+                    <input type="number" id="quantidade" name="quantidade" value="1" min="1" max="10">
+                </div>
+                
+                <button class="buy-button">Comprar Agora</button>
+
+                <div class="owner-actions hidden" id="owner-actions">
+                    <a href="#" id="btn-editar">✎ Editar</a>
+                    <button id="btn-deletar" onclick="deletarProduto()">🗑️ Deletar</button>
+                </div>
+
+                <div class="product-description">
+                    <h3>Descrição do Produto</h3>
+                    <p id="descricao-produto"></p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const produtoId = new URLSearchParams(window.location.search).get('id');
+        
+        function trocarImagem(novaSrc) {
+            document.getElementById('imagem-principal').src = novaSrc;
+            const thumbnails = document.querySelectorAll('.thumbnail-gallery img');
+            thumbnails.forEach(thumb => {
+                if (thumb.src === novaSrc) {
+                    thumb.classList.add('active');
+                } else {
+                    thumb.classList.remove('active');
+                }
+            });
+        }
+
+        function carregarDetalhesProduto() {
+            // --- USANDO DADOS FALSOS PARA DEMONSTRAÇÃO ---
+
+            const produtoFalso = {
+                id: 101,
+                nome: "Cadeira de Alimentação Portátil - Raposinha",
+                descricao: "Segura, prática e fácil de limpar. Esta cadeira de alimentação portátil é perfeita para o seu bebê. Dobrável, pode ser levada para qualquer lugar. Cinto de 3 pontos para maior segurança e bandeja removível.",
+                imagem_url: "https://i.pinimg.com/564x/07/26/50/0726505a4639a068e1a26d3d790f9453.jpg",
+                usuario_id: 5,
+                valor: "185.50",
+                nome_usuario: "Ana Paula"
+            };
+
+            const imagensGaleria = [
+                "https://a-static.mlcdn.com.br/800x560/cadeira-de-alimentacao-raposa-portatil-3-posicoes-15kg-bege-premium-baby/yuyutube/85/138241fb60b7199f1a2a7c5a20fac455.jpeg",
+                "https://a-static.mlcdn.com.br/800x560/cadeira-de-alimentacao-raposa-portatil-3-posicoes-15kg-bege-premium-baby/yuyutube/85/f6fe5fa190c7c0ab42a88e2802514d12.jpeg",
+                "https://a-static.mlcdn.com.br/800x560/cadeira-de-alimentacao-raposa-portatil-3-posicoes-15kg-bege-premium-baby/yuyutube/85/5dea8df3772e2b159eebdbf19ee3e744.jpeg",
+                "https://a-static.mlcdn.com.br/800x560/cadeira-de-alimentacao-raposa-portatil-3-posicoes-15kg-bege-premium-baby/yuyutube/85/04a9354faf4583cc145115e1f2003602.jpeg"
+            ];
+
+            // Preenche os campos da página com os dados do produto falso
+            document.getElementById('nome-produto').textContent = produtoFalso.nome;
+            document.getElementById('preco-produto').textContent = `R$ ${parseFloat(produtoFalso.valor).toFixed(2).replace('.',',')}`;
+            document.getElementById('descricao-produto').innerHTML = produtoFalso.descricao.replace(/\n/g, '<br>');
+            document.getElementById('vendedor-nome').textContent = produtoFalso.nome_usuario;
+            document.getElementById('imagem-principal').src = imagensGaleria[0];
+            document.getElementById('imagem-principal').alt = produtoFalso.nome;
+
+            // Cria as miniaturas
+            const gallery = document.getElementById('thumbnail-gallery');
+            gallery.innerHTML = ''; // Limpa a galeria
+            imagensGaleria.forEach((imgUrl, index) => {
+                const thumb = document.createElement('img');
+                thumb.src = imgUrl;
+                thumb.alt = `Miniatura ${index + 1}`;
+                thumb.onclick = () => trocarImagem(imgUrl);
+                if (index === 0) thumb.classList.add('active'); // Ativa a primeira miniatura
+                gallery.appendChild(thumb);
+            });
+
+            // Para testar, vamos simular que o usuário logado NÃO é o dono
+            const loggedUserId = 1; // ID de um usuário qualquer
+            if (loggedUserId && loggedUserId === produtoFalso.usuario_id) {
+                document.getElementById('owner-actions').classList.remove('hidden');
+                document.getElementById('btn-editar').href = `editar-produto.html?id=${produtoFalso.id}`;
+            }
+        }
+        
+        window.onload = carregarDetalhesProduto;
+    </script>
+</body>
+</html>

@@ -1,0 +1,177 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+            /* --- INÍCIO DA MODIFICAÇÃO DO FUNDO --- */
+            background-image: url('https://i.pinimg.com/1200x/d5/9e/d6/d59ed65ae2a425b791567393a277ea89.jpg');
+            background-size: cover;
+            background-position: center;
+            background-attachment: fixed;
+            position: relative;
+        }
+
+            /* --- CAMADA DE SOBREPOSIÇÃO (OVERLAY) --- */
+            body::before {
+                content: '';
+                position: fixed;
+                top: 0;
+                left: 0;
+                right: 0;
+                bottom: 0;
+                background-color: rgba(0, 0, 0, 0.5);
+                z-index: 1;
+            }
+
+        .container {
+            padding: 2rem;
+            width: 90%;
+            max-width: 400px;
+            /* --- MODIFICAÇÃO PARA O PAINEL FLUTUANTE --- */
+            position: relative;
+            z-index: 2;
+            background-color: rgba(255, 255, 255, 0.95);
+            border-radius: 15px;
+            box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.37);
+        }
+
+        h2 {
+            text-align: center;
+            color: #333;
+        }
+
+        form {
+            display: flex;
+            flex-direction: column;
+        }
+
+        input {
+            width: 95%;
+            padding: 0.8rem;
+            margin-bottom: 1rem;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            font-size: 1rem;
+        }
+
+        button {
+            width: 100%;
+            padding: 0.8rem;
+            background-color: #e984f7; /* Cor do tema */
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 1rem;
+            font-weight: bold;
+        }
+
+            button:hover {
+                background-color: #d666e4; /* Cor mais escura para hover */
+            }
+
+        .links {
+            text-align: center;
+            margin-top: 1rem;
+        }
+
+            .links a {
+                display: block;
+                margin-top: 0.8rem;
+                color: #e984f7; /* Cor do tema */
+                text-decoration: none;
+                font-size: 0.9rem;
+            }
+
+                .links a:hover {
+                    text-decoration: underline;
+                }
+
+        #mensagem {
+            margin-top: 1rem;
+            text-align: center;
+            font-weight: bold;
+        }
+
+        .sucesso {
+            color: green;
+        }
+
+        .erro {
+            color: red;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h2>Login</h2>
+        <form id="login-form">
+            <input type="email" id="email" placeholder="Email" required>
+            <input type="password" id="senha" placeholder="Senha" required>
+            <button type="submit">Entrar</button>
+        </form>
+        <div id="mensagem"></div>
+
+        <div class="links">
+            <a href="registrar.html">Não tem uma conta? Crie uma</a>
+            <a href="pedir-recuperacao.html">Esqueceu a senha?</a>
+        </div>
+    </div>
+
+    <script>
+        document.getElementById('login-form').addEventListener('submit', async function (event) {
+            event.preventDefault();
+
+            const email = document.getElementById('email').value;
+            const senha = document.getElementById('senha').value;
+            const mensagemDiv = document.getElementById('mensagem');
+            const button = event.target.querySelector('button');
+
+            button.disabled = true;
+            mensagemDiv.textContent = 'Verificando...';
+            mensagemDiv.className = '';
+
+            try {
+                const response = await fetch('http://localhost:3000/login', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ email, senha })
+                });
+
+                const result = await response.json();
+
+                if (response.ok) {
+                    // Salva o token de autenticação no navegador
+                    localStorage.setItem('token', result.token);
+
+                    mensagemDiv.textContent = result.message;
+                    mensagemDiv.className = 'sucesso';
+
+                    // Redireciona para a página principal após o login bem-sucedido
+                    setTimeout(() => {
+                        window.location.href = 'index.html';
+                    }, 1000); // Atraso de 1 segundo para o usuário ver a mensagem
+
+                } else {
+                    mensagemDiv.textContent = result.message;
+                    mensagemDiv.className = 'erro';
+                    button.disabled = false;
+                }
+            } catch (error) {
+                mensagemDiv.textContent = 'Erro de conexão com o servidor.';
+                mensagemDiv.className = 'erro';
+                button.disabled = false;
+            }
+        });
+    </script>
+</body>
+</html>

@@ -1,0 +1,291 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Meu Perfil</title>
+    <style>
+        /* (Todo o seu CSS continua o mesmo aqui) */
+        body {
+            margin: 0;
+            font-family: 'Segoe UI', sans-serif;
+            color: #333;
+            background-image: url('https://i.pinimg.com/1200x/d5/9e/d6/d59ed65ae2a425b791567393a277ea89.jpg');
+            background-size: cover;
+            background-position: center;
+            background-attachment: fixed;
+            position: relative;
+        }
+
+            body::before {
+                content: '';
+                position: fixed;
+                top: 0;
+                left: 0;
+                right: 0;
+                bottom: 0;
+                background-color: rgba(0, 0, 0, 0.5);
+                z-index: 1;
+            }
+
+        .main-content {
+            padding: 40px 20px;
+            display: flex;
+            justify-content: center;
+            position: relative;
+            z-index: 2;
+        }
+
+        .profile-card {
+            background-color: rgba(255, 255, 255, 0.95);
+            width: 90%;
+            max-width: 800px;
+            padding: 2.5rem;
+            display: flex;
+            flex-wrap: wrap;
+            align-items: flex-start;
+            gap: 40px;
+            border-radius: 15px;
+            box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.37);
+        }
+
+        .profile-pic-container {
+            text-align: center;
+            flex-basis: 150px;
+        }
+
+        .profile-pic {
+            width: 130px;
+            height: 130px;
+            background-color: #e9ecef;
+            border-radius: 50%;
+            object-fit: cover;
+            border: 4px solid white;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+            margin-bottom: 15px;
+        }
+
+        .profile-pic-container label {
+            cursor: pointer;
+            color: #e984f7;
+            font-weight: 600;
+            font-size: 0.9rem;
+            transition: color 0.2s;
+        }
+
+            .profile-pic-container label:hover {
+                color: #d666e4;
+            }
+
+        .profile-pic-container input[type="file"] {
+            display: none;
+        }
+
+        .form-container {
+            flex: 1;
+            min-width: 300px;
+        }
+
+            .form-container h2 {
+                margin-top: 0;
+                font-size: 1.8rem;
+                color: #343a40;
+                margin-bottom: 2rem;
+                text-align: left;
+            }
+
+            .form-container label {
+                display: block;
+                margin-top: 1rem;
+                margin-bottom: 0.5rem;
+                font-weight: 600;
+                color: #495057;
+                text-align: left;
+            }
+
+            .form-container input {
+                display: block;
+                width: 95%;
+                padding: 0.8rem 1rem;
+                border-radius: 8px;
+                border: 1px solid #ced4da;
+                font-size: 1rem;
+                transition: border-color 0.2s, box-shadow 0.2s;
+            }
+
+                .form-container input:disabled {
+                    background-color: #e9ecef;
+                    cursor: not-allowed;
+                }
+
+                .form-container input:focus {
+                    outline: none;
+                    border-color: #e984f7;
+                    box-shadow: 0 0 0 3px rgba(233, 132, 247, 0.25);
+                }
+
+            .form-container button {
+                width: 100%;
+                max-width: 250px;
+                padding: 0.9rem;
+                border-radius: 8px;
+                background-color: #e984f7;
+                color: white;
+                border: none;
+                font-size: 1rem;
+                font-weight: bold;
+                margin-top: 2rem;
+                cursor: pointer;
+                transition: background-color 0.2s;
+            }
+
+                .form-container button:hover {
+                    background-color: #d666e4;
+                }
+
+        #mensagem {
+            margin-top: 15px;
+            font-weight: bold;
+            padding: 0.8rem;
+            border-radius: 8px;
+            text-align: center;
+        }
+
+        .sucesso {
+            color: #155724;
+            background-color: #d4edda;
+            border: 1px solid #c3e6cb;
+        }
+
+        .erro {
+            color: #721c24;
+            background-color: #f8d7da;
+            border: 1px solid #f5c6cb;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="main-content">
+        <div class="profile-card" id="profile-container">
+            <div class="profile-pic-container">
+                <img src="https://i.pinimg.com/564x/48/6c/a0/486ca00640b169300b48e9ce895af439.jpg" alt="Foto de Perfil" class="profile-pic" id="foto-perfil-preview">
+                <label for="foto_perfil">Trocar foto</label>
+            </div>
+
+            <div class="form-container">
+                <h2 id="welcome-message">Carregando perfil...</h2>
+                <form id="perfil-form">
+                    <input type="file" id="foto_perfil" name="foto_perfil" style="display: none;" accept="image/*">
+
+                    <label for="nome_usuario">Nome de Usuário:</label>
+                    <input type="text" id="nome_usuario" name="nome_usuario" placeholder="Como você quer ser chamado">
+
+                    <label for="email">Email:</label>
+                    <input type="email" id="email" name="email" placeholder="Seu email de login" disabled>
+
+                    <label for="telefone">Telefone:</label>
+                    <input type="tel" id="telefone" name="telefone" placeholder="(XX) XXXXX-XXXX">
+
+                    <label for="data_nascimento">Data de Nascimento:</label>
+                    <input type="date" id="data_nascimento" name="data_nascimento">
+
+                    <label for="senha">Nova Senha:</label>
+                    <input type="password" id="senha" name="senha" placeholder="Deixe em branco para não alterar">
+
+                    <button type="submit">Salvar Alterações</button>
+                    <div id="mensagem"></div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const token = localStorage.getItem('token');
+        const form = document.getElementById('perfil-form');
+        const mensagemDiv = document.getElementById('mensagem');
+        const fotoPreview = document.getElementById('foto-perfil-preview');
+        const fotoInput = document.getElementById('foto_perfil');
+        const welcomeMessage = document.getElementById('welcome-message');
+
+        async function carregarPerfil() {
+            if (!token) {
+                window.location.href = 'login.html';
+                return;
+            }
+
+            // --- INÍCIO DA MUDANÇA ---
+            // A lógica `try...catch` foi melhorada para dar mais detalhes do erro.
+            try {
+                const response = await fetch('http://localhost:3000/perfil', {
+                    headers: { 'Authorization': `Bearer ${token}` }
+                });
+
+                // Tenta ler a resposta do servidor mesmo se não for 'ok'
+                const data = await response.json();
+
+                // Se a resposta não for bem-sucedida, lança um erro com a mensagem do servidor
+                if (!response.ok) {
+                    // A mensagem pode ser "Token inválido" ou "Acesso negado", vinda do servidor.
+                    throw new Error(data.message || 'Falha ao carregar perfil.');
+                }
+
+                welcomeMessage.textContent = `Olá, ${data.nome_usuario || data.email.split('@')[0]}!`;
+                document.getElementById('nome_usuario').value = data.nome_usuario || '';
+                document.getElementById('email').value = data.email || '';
+                document.getElementById('telefone').value = data.telefone || '';
+                if (data.data_nascimento) {
+                    document.getElementById('data_nascimento').value = data.data_nascimento.split('T')[0];
+                }
+                if (data.foto_perfil_url) {
+                    fotoPreview.src = `http://localhost:3000${data.foto_perfil_url}`;
+                } else {
+                    fotoPreview.src = 'https://i.pinimg.com/564x/48/6c/a0/486ca00640b169300b48e9ce895af439.jpg';
+                }
+            } catch (error) {
+                // Remove o formulário e mostra o erro específico
+                const mainContent = document.querySelector('.main-content');
+                mainContent.innerHTML = `<div class="profile-card" style="justify-content: center;">
+                                                <p class="erro" style="text-align: center; width: 100%;">
+                                                    ${error.message}<br><br><a href="login.html" style="color: #e984f7;">Fazer Login Novamente</a>
+                                                </p>
+                                            </div>`;
+            }
+            // --- FIM DA MUDANÇA ---
+        }
+
+        fotoInput.addEventListener('change', (event) => {
+            if (event.target.files && event.target.files[0]) {
+                const reader = new FileReader();
+                reader.onload = (e) => { fotoPreview.src = e.target.result; }
+                reader.readAsDataURL(event.target.files[0]);
+            }
+        });
+
+        form.addEventListener('submit', async (event) => {
+            event.preventDefault();
+            const formData = new FormData(form);
+            if (!formData.get('senha')) { formData.delete('senha'); }
+
+            try {
+                const response = await fetch('http://localhost:3000/perfil', {
+                    method: 'PUT',
+                    headers: { 'Authorization': `Bearer ${token}` },
+                    body: formData
+                });
+                const result = await response.json();
+                mensagemDiv.className = response.ok ? 'sucesso' : 'erro';
+                mensagemDiv.textContent = result.message;
+                if (response.ok) {
+                    welcomeMessage.textContent = `Olá, ${formData.get('nome_usuario') || document.getElementById('email').value.split('@')[0]}!`;
+                }
+            } catch (error) {
+                mensagemDiv.textContent = 'Erro de conexão ao salvar o perfil.';
+                mensagemDiv.className = 'erro';
+            }
+        });
+
+        window.onload = carregarPerfil;
+    </script>
+</body>
+</html>

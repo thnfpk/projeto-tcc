@@ -1,0 +1,242 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Editar Produto</title>
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            font-family: Arial, sans-serif;
+            background-image: url('https://i.pinimg.com/1200x/d5/9e/d6/d59ed65ae2a425b791567393a277ea89.jpg');
+            background-size: cover;
+            background-position: center;
+            background-attachment: fixed;
+            position: relative;
+        }
+
+            body::before {
+                content: '';
+                position: fixed;
+                top: 0;
+                left: 0;
+                right: 0;
+                bottom: 0;
+                background-color: rgba(0, 0, 0, 0.5);
+                z-index: 1;
+            }
+
+        .container {
+            max-width: 900px;
+            margin: 2rem auto;
+            position: relative;
+            z-index: 2;
+            background-color: rgba(255, 255, 255, 0.95);
+            padding: 30px;
+            border-radius: 15px;
+            box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.37);
+        }
+
+        .top-bar {
+            display: flex;
+            align-items: center;
+            gap: 20px;
+            font-size: 24px;
+            margin-bottom: 20px;
+        }
+
+            .top-bar a {
+                text-decoration: none;
+                color: #333;
+                font-weight: bold;
+            }
+
+        h2 {
+            text-align: center;
+            margin-bottom: 20px;
+        }
+
+        .produto-form {
+            display: flex;
+            gap: 40px;
+            align-items: flex-start;
+        }
+
+        .imagem-container img {
+            width: 250px;
+            height: 250px;
+            border-radius: 10px;
+            object-fit: cover;
+            border: 1px solid #ddd;
+        }
+
+        .imagem-container label {
+            cursor: pointer;
+            color: #e984f7;
+            text-decoration: underline;
+            display: block;
+            margin-top: 10px;
+            text-align: center;
+        }
+
+        .info-form {
+            font-size: 16px;
+            flex: 1;
+        }
+
+            .info-form label {
+                display: block;
+                margin-bottom: 5px;
+                font-weight: bold;
+            }
+
+            .info-form input, .info-form textarea {
+                width: 95%;
+                padding: 10px;
+                margin-bottom: 15px;
+                border: 1px solid #ccc;
+                border-radius: 5px;
+                font-size: 1rem;
+            }
+
+            .info-form button {
+                padding: 10px 20px;
+                border-radius: 5px;
+                border: none;
+                background-color: #e984f7;
+                color: white;
+                font-size: 16px;
+                cursor: pointer;
+            }
+
+                .info-form button:hover {
+                    background-color: #d666e4;
+                }
+
+        #mensagem {
+            margin-top: 15px;
+            font-weight: bold;
+            padding: 0.8rem;
+            border-radius: 8px;
+        }
+
+        .sucesso {
+            color: #155724;
+            background-color: #d4edda;
+            border: 1px solid #c3e6cb;
+        }
+
+        .erro {
+            color: #721c24;
+            background-color: #f8d7da;
+            border: 1px solid #f5c6cb;
+        }
+    </style>
+</head>
+<body>
+    <div class="container" id="edit-container">
+        <div class="top-bar">
+            <a href="meus-anuncios.html">&lt; Voltar</a>
+        </div>
+        <h2>Editar produto</h2>
+
+        <form class="produto-form" id="edit-product-form">
+            <div class="imagem-container">
+                <img src="" alt="Imagem do Produto" id="imagem-preview">
+                <label for="imagem-input">Trocar imagem +</label>
+                <input type="file" name="imagem" id="imagem-input" accept="image/*" style="display: none;">
+            </div>
+            <div class="info-form">
+                <label for="valor">Preço ou Item de Troca:</label>
+                <input type="text" id="valor" name="valor" placeholder="Ex: R$500,00 ou 'Troco por...'" required>
+                <label for="nome">Título do Produto:</label>
+                <input type="text" id="nome" name="nome" placeholder="Nome do produto" required>
+                <label for="descricao">Descrição:</label>
+                <textarea id="descricao" name="descricao" rows="4" placeholder="Detalhes do produto"></textarea>
+                <button type="submit">Salvar Alterações</button>
+                <div id="mensagem"></div>
+            </div>
+        </form>
+    </div>
+
+    <script>
+        const form = document.getElementById('edit-product-form');
+        const mensagemDiv = document.getElementById('mensagem');
+        const produtoId = new URLSearchParams(window.location.search).get('id');
+        const editContainer = document.getElementById('edit-container');
+
+        function getUserIdFromToken() {
+            const token = localStorage.getItem('token');
+            if (!token) return null;
+            try { return JSON.parse(atob(token.split('.')[1])).id; } catch (e) { return null; }
+        }
+
+        async function carregarProdutoParaEdicao() {
+            if (!produtoId) {
+                editContainer.innerHTML = '<h1>Produto não fornecido.</h1>';
+                return;
+            }
+            try {
+                const response = await fetch(`http://localhost:3000/produtos/${produtoId}`);
+                const produto = await response.json();
+
+                if (!response.ok) throw new Error(produto.message);
+
+                const userId = getUserIdFromToken();
+                if (!userId || userId !== produto.usuario_id) {
+                    editContainer.innerHTML = '<h1>Acesso Negado: Você não tem permissão para editar este produto.</h1>';
+                    return;
+                }
+
+                document.getElementById('nome').value = produto.nome;
+                document.getElementById('valor').value = produto.valor;
+                document.getElementById('descricao').value = produto.descricao;
+                document.getElementById('imagem-preview').src = `http://localhost:3000${produto.imagem_url}`;
+
+            } catch (error) {
+                editContainer.innerHTML = `<h1>Erro ao carregar produto: ${error.message}</h1>`;
+            }
+        }
+
+        form.addEventListener('submit', async function (event) {
+            event.preventDefault();
+            const formData = new FormData(form);
+            const token = localStorage.getItem('token');
+            const button = form.querySelector('button');
+
+            button.disabled = true;
+            mensagemDiv.textContent = 'Salvando...';
+            mensagemDiv.className = '';
+
+            try {
+                const response = await fetch(`http://localhost:3000/produtos/${produtoId}`, {
+                    method: 'PUT',
+                    headers: { 'Authorization': `Bearer ${token}` },
+                    body: formData
+                });
+                const result = await response.json();
+                mensagemDiv.textContent = result.message;
+                mensagemDiv.className = response.ok ? 'sucesso' : 'erro';
+            } catch (error) {
+                mensagemDiv.textContent = 'Erro de conexão ao salvar.';
+                mensagemDiv.className = 'erro';
+            } finally {
+                button.disabled = false;
+            }
+        });
+
+        document.getElementById('imagem-input').addEventListener('change', function (event) {
+            if (event.target.files && event.target.files[0]) {
+                const reader = new FileReader();
+                reader.onload = (e) => {
+                    document.getElementById('imagem-preview').src = e.target.result;
+                }
+                reader.readAsDataURL(event.target.files[0]);
+            }
+        });
+
+        window.onload = carregarProdutoParaEdicao;
+    </script>
+</body>
+</html>

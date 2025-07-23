@@ -1,0 +1,236 @@
+﻿<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Meus Anúncios</title>
+    <style>
+        body {
+            margin: 0;
+            font-family: Arial, sans-serif;
+            background-image: url('https://i.pinimg.com/1200x/d5/9e/d6/d59ed65ae2a425b791567393a277ea89.jpg');
+            background-size: cover;
+            background-position: center;
+            background-attachment: fixed;
+            position: relative;
+        }
+
+        body::before {
+            content: '';
+            position: fixed;
+            top: 0; left: 0; right: 0; bottom: 0;
+            background-color: rgba(0, 0, 0, 0.4);
+            z-index: 1;
+        }
+
+        header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 1rem 2rem;
+            background-color: #e984f7;
+            border-bottom: 1px solid #ddd;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+            position: relative;
+            z-index: 2;
+        }
+
+        .header-left,
+        .header-right {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .header-left span {
+            font-weight: bold;
+            font-size: 1.2rem;
+            color: white;
+        }
+
+        header a {
+            text-decoration: none;
+            color: white;
+            font-size: 1rem;
+        }
+
+        main {
+            padding: 30px;
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+            gap: 40px;
+            max-width: 1200px;
+            margin: auto;
+            position: relative;
+            z-index: 2;
+        }
+
+        .item {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            text-align: center;
+            position: relative;
+            background-color: white;
+            padding: 1rem;
+            border-radius: 8px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+        }
+
+        .item img {
+            width: 150px;
+            height: 150px;
+            object-fit: cover;
+            border-radius: 8px;
+        }
+
+        .edit-icon {
+            position: absolute;
+            top: 10px;
+            left: 10px;
+            width: 25px;
+            height: 25px;
+            background-color: #fff;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 14px;
+            border: 1px solid #ccc;
+            cursor: pointer;
+            text-decoration: none;
+            color: black;
+            transition: background-color 0.2s, transform 0.2s;
+        }
+
+        .edit-icon:hover {
+            background-color: #f0f0f0;
+            transform: scale(1.1);
+        }
+
+        .item p {
+            margin-top: 10px;
+            font-size: 15px;
+            color: #333;
+        }
+    </style>
+</head>
+<body>
+
+    <header>
+        <div class="header-left">
+            <a href="index.html" style="font-size: 24px;">‹</a>
+            <span>Meus anúncios</span>
+        </div>
+        <div class="header-right">
+            <a href="cadastrar-produto.html" style="font-weight: bold;">+ Vender Novo Produto</a>
+            <a href="perfil.html">Meu Perfil</a>
+        </div>
+    </header>
+
+    <main id="anuncios-grid">
+        </main>
+
+    <script>
+        // --- INÍCIO DA MUDANÇA: USANDO DADOS FALSOS ---
+
+        function carregarMeusAnuncios() {
+            const grid = document.getElementById('anuncios-grid');
+            
+            
+
+            grid.innerHTML = ''; // Limpa a mensagem "Carregando..."
+
+            if (meusProdutosFalsos.length === 0) {
+                grid.innerHTML = '<p style="text-align: center; grid-column: 1 / -1; color: white; background-color: rgba(0,0,0,0.5); padding: 1rem; border-radius: 8px;">Você ainda não tem nenhum anúncio.</p>';
+            } else {
+                meusProdutosFalsos.forEach(produto => {
+                    const itemDiv = document.createElement('div');
+                    itemDiv.className = 'item';
+
+                    const editLink = document.createElement('a');
+                    editLink.href = `editar-produto.html?id=${produto.id}`;
+                    editLink.className = 'edit-icon';
+                    editLink.textContent = '✎';
+
+                    const img = document.createElement('img');
+                    // Como a URL é externa, usamos diretamente, sem o "http://localhost:3000"
+                    img.src = produto.imagem_url; 
+                    img.alt = produto.nome;
+
+                    const p = document.createElement('p');
+                    p.innerHTML = `${produto.valor || 'A negociar'}<br><strong>${produto.nome}</strong>`;
+
+                    itemDiv.appendChild(editLink);
+                    itemDiv.appendChild(img);
+                    itemDiv.appendChild(p);
+
+                    grid.appendChild(itemDiv);
+                });
+            }
+        }
+
+        /*
+        // CÓDIGO ORIGINAL QUE CONECTA AO BACKEND (DESATIVADO)
+        async function carregarMeusAnuncios() {
+            const grid = document.getElementById('anuncios-grid');
+            const token = localStorage.getItem('token');
+
+            if (!token) {
+                window.location.href = 'login.html';
+                return;
+            }
+
+            try {
+                const response = await fetch('http://localhost:3000/meus-anuncios', {
+                    headers: { 'Authorization': `Bearer ${token}` }
+                });
+
+                if (!response.ok) {
+                    localStorage.removeItem('token');
+                    window.location.href = 'login.html';
+                    return;
+                }
+
+                const produtos = await response.json();
+                grid.innerHTML = ''; 
+
+                if (produtos.length === 0) {
+                    grid.innerHTML = '<p style="text-align: center; grid-column: 1 / -1;">Você ainda não tem nenhum anúncio. Clique em "Vender Novo Produto" para começar.</p>';
+                } else {
+                    produtos.forEach(produto => {
+                        const itemDiv = document.createElement('div');
+                        itemDiv.className = 'item';
+
+                        const editLink = document.createElement('a');
+                        editLink.href = `editar-produto.html?id=${produto.id}`;
+                        editLink.className = 'edit-icon';
+                        editLink.textContent = '✎';
+
+                        const img = document.createElement('img');
+                        img.src = `http://localhost:3000${produto.imagem_url}`;
+                        img.alt = produto.nome;
+
+                        const p = document.createElement('p');
+                        p.innerHTML = `${produto.valor || 'A negociar'}<br><strong>${produto.nome}</strong>`;
+
+                        itemDiv.appendChild(editLink);
+                        itemDiv.appendChild(img);
+                        itemDiv.appendChild(p);
+
+                        grid.appendChild(itemDiv);
+                    });
+                }
+
+            } catch (error) {
+                console.error("Erro ao carregar anúncios:", error);
+                grid.innerHTML = '<p style="text-align: center;">Ocorreu um erro ao carregar seus anúncios.</p>';
+            }
+        }
+        */
+        
+        // Chama a função para carregar os anúncios assim que a página for aberta
+        window.onload = carregarMeusAnuncios;
+    </script>
+</body>
+</html>
